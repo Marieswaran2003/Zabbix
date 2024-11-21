@@ -1,0 +1,92 @@
+To configure a Zabbix Agent, you need to perform several steps to enable monitoring by a Zabbix Server. Here’s a breakdown of the key configurations typically done:
+
+1. Install the Zabbix Agent
+On Linux:
+
+# sudo apt install zabbix-agent   # For Debian/Ubuntu
+# sudo yum install zabbix-agent   # For RHEL/CentOS
+On Windows: Download the agent from the Zabbix download page.
+2. Edit the Zabbix Agent Configuration File
+The primary configuration file is located at /etc/zabbix/zabbix_agentd.conf.
+
+Key parameters to configure:
+Server<IP>
+and ServerActive
+These specify the Zabbix Server or Proxy IP/hostname that the agent communicates with.
+
+conf
+
+Server=<Zabbix_Server_IP>
+ServerActive=<Zabbix_Server_IP>
+Server: For passive checks (server requests data from the agent).
+ServerActive: For active checks (agent sends data to the server).
+Hostname
+The unique name of the host as defined in the Zabbix Server's configuration.
+
+conf
+
+Hostname=<Your_Hostname>
+Ensure this matches the hostname configured in Zabbix Server.
+
+ListenPort (Optional)
+The port on which the agent listens for connections (default is 10050).
+
+conf
+
+ListenPort=10050
+LogFile (Optional)
+Path to the log file for debugging and troubleshooting.
+
+conf
+
+LogFile=/var/log/zabbix/zabbix_agentd.log
+Timeout (Optional)
+Maximum time for processing a single check (default is 3 seconds).
+
+conf
+
+Timeout=10
+Include (Optional)
+Path to additional configuration files (useful for modular setups).
+
+conf
+
+Include=/etc/zabbix/zabbix_agentd.d/*.conf
+3. Start and Enable the Agent
+On Linux:
+
+# sudo systemctl start zabbix-agent
+# sudo systemctl enable zabbix-agent
+On Windows: Start the Zabbix Agent service from the Services menu or using the command line:
+cmd
+
+# net start "Zabbix Agent"
+4. Configure Firewall Rules
+Ensure the Zabbix Agent port (default 10050) is open in your firewall.
+
+On Linux:
+
+# sudo firewall-cmd --add-port=10050/tcp --permanent
+# sudo firewall-cmd --reload
+5. Add the Host in Zabbix Server
+Log in to the Zabbix Server web interface.
+Navigate to Configuration > Hosts.
+Click Create Host and set:
+Host Name: Matches Hostname in zabbix_agentd.conf.
+Visible Name: Optional, for display purposes.
+IP Address: The IP of the monitored machine.
+Templates: Link to appropriate templates for monitoring.
+
+6. Restart the Zabbix Agent
+After making changes to the configuration file, restart the agent:
+
+# sudo systemctl restart zabbix-agent
+7. Verify the Configuration
+Check agent logs for errors:
+
+# tail -f /var/log/zabbix/zabbix_agentd.log
+Verify connectivity between the agent and server using:
+
+zabbix_get -s <agent_IP> -k <key>
+Replace <key> with a valid Zabbix item (e.g., system.uptime).
+By completing these configurations, the Zabbix Agent will successfully send and receive data from the Zabbix Server.
